@@ -3,8 +3,9 @@ import { useUploadThing } from "@/utils/uploadthing";
 import UploadFormInput from "./upload-form-input";
 import { z } from "zod";
 import { toast } from "sonner";
-import { generatePdfSummary } from "@/actions/upload-actions";
+import { generatePdfSummary, storePdfSummaryAction } from "@/actions/upload-actions";
 import { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 
 const schema = z.object({
   file: z
@@ -20,6 +21,7 @@ export default function UploadForm() {
   // const { toast } = useToast();
   const formRef = useRef<HTMLFormElement>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const { startUpload, routeConfig } = useUploadThing("pdfUploader", {
     onClientUploadComplete: () => {
@@ -44,7 +46,10 @@ export default function UploadForm() {
       const formData = new FormData(e.currentTarget);
       const file = formData.get("file") as File;
 
+      //validating the fields
       const validatedFields = schema.safeParse({ file });
+
+      console.log(validatedFields);
       if (!validatedFields.success) {
         toast.error("❌ Something went wrong", {
           description:
@@ -54,64 +59,70 @@ export default function UploadForm() {
         setIsLoading(false);
         return;
       }
-
-      toast("📤 Uploading PDF...", {
-        description: (
-          <span className="text-slate-400 text-sm">
-            Your PDF is being uploaded to our AI.
-          </span>
-        ),
+      toast("📑 Uploading PDF...", {
+        description:(<span className="text-slate-400 text-sm">
+          Your PDF is being uploaded to our AI!
+        </span>) ,
       });
-
+      //uploading the file to uploadthing
       const resp = await startUpload([file]);
       if (!resp) {
-        toast.error("❌ Upload failed", {
-          description: "Please try using a different file.",
+        toast.error("Something went wrong", {
+          description: "Please use a different file",
         });
         setIsLoading(false);
         return;
       }
-
-      toast("🔎 Reading PDF...", {
-        description: (
-          <span className="text-slate-400 text-sm">
-            Our AI is analyzing your document.
-          </span>
-        ),
-      });
-
-      // 🧠 Call the AI and handle summary generation
-      const result = await toast.promise(generatePdfSummary(resp), {
-        loading: "✨ Summarizing your PDF...",
-        success: () => {
-          return "✅ Summary ready!";
+      const promise = () =>
+        new Promise((resolve) =>
+          setTimeout(() => resolve({ name: "Sonner" }), 2000)
+        );
+      toast.promise(promise, {
+        loading: "Hang tight! Our AI is reading through your document! ✨",
+        success: (data) => {
+          return "Here is your summary!";
         },
-        error: "❌ Failed to summarize the document. Please try again.",
+        error: "Something went wrong! Please try again later.",
       });
+      //parse the pdf using lang chain
+      //summarise the pdf using AI
+      const result = await generatePdfSummary(resp);
+      const { data = null, message = null } = result || {};
 
-      const { data = null } = result || {};
-
-      if (data?.summary) {
-        toast("📥 Saving Summary...", {
-          description: (
-            <span className="text-slate-400 text-sm">
-              Almost done — saving your summary!
-            </span>
-          ),
+      if (data) {
+        let storeResult: any;
+        toast("📑 Saving PDF...", {
+          description: (<span className="text-slate-400 text-sm">
+            Hang tight! We are saving your summary!!
+          </span>),
         });
         formRef.current?.reset();
-
-        // 🔒 You can now save summary to DB or redirect
-        // await saveSummaryToDb(data.summary)
+        if (data.summary) {
+          storeResult = await storePdfSummaryAction({
+            summary: data.summary,
+            fileUrl: resp[0].serverData.file.url,
+            title: data?.title ,
+            fileName: file.name,
+          })
+          // save the summary to the database
+          toast("✨Summary Generated ✨",{
+            description: "Your PDF has been successfully summarised and saved!"
+          });
+          formRef.current?.reset(); 
+          router.push( `/summaries/${storeResult.data.id}`)
+          // redirect to the summary page
+        }
       }
+      // summarise the pdf using AI
+      //redirect to the [id] summary page
     } catch (err) {
-      console.error("Error occurred", err);
-      toast.error("Something went wrong");
-    } finally {
+      setIsLoading(false);
+      console.error("Error occured", err);
+      formRef.current?.reset();
+    }finally{
       setIsLoading(false);
     }
   };
-
   return (
     <div className="flex flex-col gap-8 w-full max-w-2xl mx-auto">
       <UploadFormInput
