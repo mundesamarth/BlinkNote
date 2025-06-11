@@ -27,7 +27,7 @@ export default function Header() {
 
       <div className="flex lg:justify-end lg:flex-1">
         <SignedIn>
-          <div className="flex lg:justify-end lg:flex-1">
+          <div className="flex lg:justify-end lg:flex-1 gap-2">
             <NavLink href="/upload">Upload a PDF</NavLink>
             <div>PRO</div>
             <SignedIn>
