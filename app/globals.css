@@ -181,3 +181,36 @@
     max-width: 1400px;
   }
 }
+
+.glass-border {
+  position: relative;
+  overflow: hidden;
+  z-index: 0;
+}
+.glass-border::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: conic-gradient(from 0deg, white 10%, transparent 40%, white 70%);
+  animation: rotate 4s linear infinite;
+  z-index: -1;
+  border-radius: 0.75rem;
+  pointer-events: none;
+  mask-image: linear-gradient(white, white); /* prevent pseudo from blocking interactions */
+}
+
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(180deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
