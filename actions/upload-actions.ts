@@ -122,8 +122,22 @@ async function savePdfSummary({
   //sql inserting  pdf summary
   try {
     const sql = await getDBConnection();
-    await sql`INSERT INTO pdf_summaries (user_id, original_file_url, summary_text, title, file_name)
-  VALUES (${userId},${fileUrl},${summary},${title},${fileName})`;
+    const [savedSummary] =
+      await sql`
+      INSERT INTO pdf_summaries (
+      user_id,
+      original_file_url, 
+      summary_text, 
+      title, 
+      file_name
+      )VALUES (
+      ${userId},
+      ${fileUrl},
+      ${summary},
+      ${title},
+      ${fileName}
+      ) RETURNING id,summary_text`;
+    return savedSummary;
   } catch (err) {
     console.error("Error saving PDF summary", err);
     throw err;
@@ -136,11 +150,6 @@ export async function storePdfSummaryAction({
   title,
   fileName,
 }: PdfSummaryType) {
-  // user is logged in and has a userID
-
-  //savePDFSummary
-  //savepdfSUmmary function
-
   let savedSummary: any;
   try {
     const { userId } = await auth();
@@ -178,6 +187,6 @@ export async function storePdfSummaryAction({
     message: "PDF summary saved successfully",
     data: {
       id: savedSummary.id,
-    }
+    },
   };
 }

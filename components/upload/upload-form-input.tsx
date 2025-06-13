@@ -24,7 +24,7 @@ export const UploadFormInput = forwardRef<
           className={cn(isLoading && "opacity-50 cursor-not-allowed")}
           disabled={isLoading}
         />
-        <Button disabled={isLoading}>
+        <Button disabled={isLoading} className="bg-linear-to-r from-purple-500 to-purple-700 group hover:no-underline">
           {isLoading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />

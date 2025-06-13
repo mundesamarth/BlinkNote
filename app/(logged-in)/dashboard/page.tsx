@@ -1,19 +1,21 @@
 import BgGradient from "@/components/common/bg-gradient";
 import SummaryCard from "@/components/summaries/summary-card";
 import { Button } from "@/components/ui/button";
+import { getSummaries } from "@/lib/summaries";
+import { currentUser } from "@clerk/nextjs/server";
 import { ArrowRight, Plus } from "lucide-react";
+import { redirect } from "next/navigation";
 import Link from "next/link";
+import EmptySummaryState from "@/components/summaries/empty-summary-state";
 
-export default function Dashboard() {
+export default async function Dashboard() {
+  const user = await currentUser();
+  const userId = user?.id;
+  if (!userId) {
+    return redirect("/sign-in");
+  }
   const uploadLimit = 5;
-  const summaries = [{
-    id:1,
-    title:'Testing',
-    summaries_text:'hello hello this is summary',
-    createdAt: 2025,
-    status:'completed'
-    
-  }]
+  const summaries = await getSummaries(userId);
   return (
     <main className="min-h-screen">
       <BgGradient className="from-slate-200 via-slate-200 to-slate-200" />
@@ -56,11 +58,15 @@ export default function Dashboard() {
               </p>
             </div>
           </div>
-          <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3 sm:px-0">
-           {summaries.map((summary, index) => (
-            <SummaryCard key={index} summary={summary}/>
-           ))}
-          </div>
+          {summaries.length === 0 ? (
+            <EmptySummaryState />
+          ) : (
+            <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3 sm:px-0">
+              {summaries.map((summary, index) => (
+                <SummaryCard key={index} summary={summary} />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </main>

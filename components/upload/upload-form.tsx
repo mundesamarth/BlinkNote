@@ -10,20 +10,16 @@ import { useRouter } from "next/navigation";
 const schema = z.object({
   file: z
     .instanceof(File, { message: "Invalid file" })
-    .refine(
-      (file) => file.size < 1024 * 1024 * 20,
-      "File size should be less than 20MB"
-    )
+    .refine((file) => file.size < 1024 * 1024 * 20, "File size should be less than 20MB")
     .refine((file) => file.type === "application/pdf", "File should be a PDF"),
 });
 
 export default function UploadForm() {
-  // const { toast } = useToast();
   const formRef = useRef<HTMLFormElement>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const { startUpload, routeConfig } = useUploadThing("pdfUploader", {
+  const { startUpload } = useUploadThing("pdfUploader", {
     onClientUploadComplete: () => {
       console.log("Upload successfully!");
     },
@@ -46,25 +42,20 @@ export default function UploadForm() {
       const formData = new FormData(e.currentTarget);
       const file = formData.get("file") as File;
 
-      //validating the fields
       const validatedFields = schema.safeParse({ file });
 
-      console.log(validatedFields);
       if (!validatedFields.success) {
         toast.error("❌ Something went wrong", {
-          description:
-            validatedFields.error.flatten().fieldErrors.file?.[0] ??
-            "Invalid file",
+          description: validatedFields.error.flatten().fieldErrors.file?.[0] ?? "Invalid file",
         });
         setIsLoading(false);
         return;
       }
+
       toast("📑 Uploading PDF...", {
-        description:(<span className="text-slate-400 text-sm">
-          Your PDF is being uploaded to our AI!
-        </span>) ,
+        description: <span className="text-slate-400 text-sm">Your PDF is being uploaded to our AI!</span>,
       });
-      //uploading the file to uploadthing
+
       const resp = await startUpload([file]);
       if (!resp) {
         toast.error("Something went wrong", {
@@ -73,63 +64,59 @@ export default function UploadForm() {
         setIsLoading(false);
         return;
       }
-      const promise = () =>
-        new Promise((resolve) =>
-          setTimeout(() => resolve({ name: "Sonner" }), 2000)
-        );
-      toast.promise(promise, {
-        loading: "Hang tight! Our AI is reading through your document! ✨",
-        success: (data) => {
-          return "Here is your summary!";
-        },
-        error: "Something went wrong! Please try again later.",
+
+      // Show summary in progress toast
+      toast("✨ Hang tight!", {
+        description: <span className="text-slate-400 text-sm">Our AI is reading through your document!</span>,
       });
-      //parse the pdf using lang chain
-      //summarise the pdf using AI
+
       const result = await generatePdfSummary(resp);
       const { data = null, message = null } = result || {};
 
-      if (data) {
-        let storeResult: any;
+      if (data && data.summary) {
         toast("📑 Saving PDF...", {
-          description: (<span className="text-slate-400 text-sm">
-            Hang tight! We are saving your summary!!
-          </span>),
+          description: <span className="text-slate-400 text-sm">Hang tight! We are saving your summary!!</span>,
         });
+
+        const storeResult = await storePdfSummaryAction({
+          summary: data.summary,
+          fileUrl: resp[0].serverData.file.url,
+          title: data.title,
+          fileName: file.name,
+        });
+
+        toast("✨ Summary Generated ✨", {
+          description: "Your PDF has been successfully summarised and saved!",
+        });
+
         formRef.current?.reset();
-        if (data.summary) {
-          storeResult = await storePdfSummaryAction({
-            summary: data.summary,
-            fileUrl: resp[0].serverData.file.url,
-            title: data?.title ,
-            fileName: file.name,
-          })
-          // save the summary to the database
-          toast("✨Summary Generated ✨",{
-            description: "Your PDF has been successfully summarised and saved!"
+        router.push(`/summaries/${storeResult.data.id}`);
+      } else {
+        if (message?.toLowerCase().includes("token")) {
+          toast.error("Summary failed", {
+            description: "🚫 The PDF is too long and exceeds token limits. Please try a shorter file.",
           });
-          formRef.current?.reset(); 
-          router.push( `/summaries/${storeResult.data.id}`)
-          // redirect to the summary page
+        } else {
+          toast.error("Summary failed", {
+            description: "Something went wrong while generating the summary.",
+          });
         }
+        formRef.current?.reset();
       }
-      // summarise the pdf using AI
-      //redirect to the [id] summary page
     } catch (err) {
-      setIsLoading(false);
-      console.error("Error occured", err);
+      console.error("Error occurred", err);
+      toast.error("Something went wrong", {
+        description: "An unexpected error occurred. Please try again.",
+      });
       formRef.current?.reset();
-    }finally{
+    } finally {
       setIsLoading(false);
     }
   };
+
   return (
     <div className="flex flex-col gap-8 w-full max-w-2xl mx-auto">
-      <UploadFormInput
-        isLoading={isLoading}
-        ref={formRef}
-        onSubmit={handleSubmit}
-      />
+      <UploadFormInput isLoading={isLoading} ref={formRef} onSubmit={handleSubmit} />
     </div>
   );
 }
