@@ -1,13 +1,17 @@
 export function formatFileNameAsTitle(fileName: string): string {
+  // Remove file extension (.pdf, .docx, etc.)
   const withoutExtension = fileName.replace(/\.[^/.]+$/, "");
-  const withSpaces = withoutExtension
-  .replace(/[-_]+/g, " ") //Replace dashes and underscores with spaces
-  .replace(/([a-z])([A-Z])/g, "$1 $2"); //Add spaces between camelCase
 
-  // Convert to title case (capitalize first letter of each word)
+  // Replace dashes/underscores with spaces and handle camelCase
+  const withSpaces = withoutExtension
+    .replace(/[-_]+/g, " ")           // Replace - and _ with space
+    .replace(/([a-z])([A-Z])/g, "$1 $2"); // Add space before capital letters in camelCase
+
+  // Capitalize each word
   return withSpaces
     .split(" ")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .filter(Boolean) // Remove empty strings
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
     .join(" ")
     .trim();
 }

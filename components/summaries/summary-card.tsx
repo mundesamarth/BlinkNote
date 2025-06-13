@@ -4,6 +4,7 @@ import DeleteButton from "./delete-button";
 import { FileText } from "lucide-react";
 import { cn, formatFileName } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
+import { formatFileNameAsTitle } from "@/utils/format-utils";
 
 const SummaryHeader = ({
   fileUrl,
@@ -19,7 +20,7 @@ const SummaryHeader = ({
       <FileText className="w-6 h-6 text-purple-400 mt-1" />
       <div className="flex-1 min-w-0">
         <h3 className="text-base xl:text-ls font-semibold text-gray-900 truncate w-4/5">
-          {title || formatFileName(fileUrl)}
+          {title ? formatFileNameAsTitle(title) : formatFileName(fileUrl)}
         </h3>
         <p className="text-sm text-gray-500">{formatDistanceToNow(new Date(created_at),{addSuffix: true})}</p>
       </div>

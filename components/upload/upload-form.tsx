@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { generatePdfSummary, storePdfSummaryAction } from "@/actions/upload-actions";
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { formatFileNameAsTitle } from "@/utils/format-utils";
 
 const schema = z.object({
   file: z
@@ -81,7 +82,7 @@ export default function UploadForm() {
         const storeResult = await storePdfSummaryAction({
           summary: data.summary,
           fileUrl: resp[0].serverData.file.url,
-          title: data.title,
+          title: formatFileNameAsTitle(file.name),
           fileName: file.name,
         });
 

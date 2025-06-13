@@ -56,12 +56,12 @@ export async function generatePdfSummary(
     let summary;
 
     try {
-      summary = await generateSummaryFromOpenAI(pdfText);
-      console.log("✅ OpenAI worked:", summary);
+      // Try Gemini first
+      summary = await generateSummaryFromGemini(pdfText);
+      console.log("✅ Gemini worked:", summary);
     } catch (err: any) {
-      console.error("❌ OpenAI failed:", err);
+      console.error("❌ Gemini failed:", err);
 
-      // Make sure this detects real errors
       const errorMessage = err?.message?.toLowerCase?.() || "";
       const isRateLimit =
         err?.status === 429 ||
@@ -71,17 +71,17 @@ export async function generatePdfSummary(
 
       if (isRateLimit) {
         try {
-          console.log("⚠️ Falling back to Gemini...");
-          summary = await generateSummaryFromGemini(pdfText);
-          console.log("✅ Gemini worked:", summary);
-        } catch (geminiError) {
-          console.error("❌ Gemini also failed:", geminiError);
+          console.log("⚠️ Falling back to OpenAI...");
+          summary = await generateSummaryFromOpenAI(pdfText);
+          console.log("✅ OpenAI worked:", summary);
+        } catch (openAIError) {
+          console.error("❌ OpenAI also failed:", openAIError);
           throw new Error(
             "Failed to generate summary with available AI providers"
           );
         }
       } else {
-        // 🔥 Don't silently fail on other errors
+        // Don't ignore other errors from Gemini
         throw err;
       }
     }
@@ -122,8 +122,7 @@ async function savePdfSummary({
   //sql inserting  pdf summary
   try {
     const sql = await getDBConnection();
-    const [savedSummary] =
-      await sql`
+    const [savedSummary] = await sql`
       INSERT INTO pdf_summaries (
       user_id,
       original_file_url, 
