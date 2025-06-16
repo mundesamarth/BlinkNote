@@ -7,6 +7,7 @@ import { ArrowRight, Plus } from "lucide-react";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import EmptySummaryState from "@/components/summaries/empty-summary-state";
+import { hasReachedUploadLimit } from "@/lib/user";
 
 export default async function Dashboard() {
   const user = await currentUser();
@@ -14,7 +15,7 @@ export default async function Dashboard() {
   if (!userId) {
     return redirect("/sign-in");
   }
-  const uploadLimit = 5;
+  const {hasReachedLimit, uploadLimit} = await hasReachedUploadLimit(userId);
   const summaries = await getSummaries(userId);
   return (
     <main className="min-h-screen">
@@ -31,7 +32,7 @@ export default async function Dashboard() {
               </p>
             </div>
 
-            <Button
+            {!hasReachedLimit && <Button
               variant={"link"}
               className="bg-linear-to-r from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800 hover:scale-105 transition-all duration-300 group hover:no-underline"
             >
@@ -40,9 +41,9 @@ export default async function Dashboard() {
                 <Plus className="2-5 h-5 mr-2" />
                 New Summary
               </Link>
-            </Button>
+            </Button>}
           </div>
-          <div className="mb-6">
+         {hasReachedLimit &&  <div className="mb-6">
             <div className=" border  border-purple-200 rounded-lg p-4 text-purple-800 backdrop-blur-md bg-purple-50">
               <p className="text-sm">
                 You've reached the limit of {uploadLimit} uploads per month on
@@ -57,7 +58,7 @@ export default async function Dashboard() {
                 for unlimited uploads.
               </p>
             </div>
-          </div>
+          </div>}
           {summaries.length === 0 ? (
             <EmptySummaryState />
           ) : (

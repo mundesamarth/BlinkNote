@@ -1,7 +1,7 @@
 import { ScrollText } from "lucide-react";
-import { Button } from "../ui/button";
 import NavLink from "./nav-link";
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import PlanBadge from "./plan-badge";
 
 export default function Header() {
   return (
@@ -11,7 +11,7 @@ export default function Header() {
           href="/"
           className="flex items-center  gap-1 lg:gap-2 shrink-0 "
         >
-          <ScrollText className="w-5 h-5 lg:w-8 h-8 text-gray-900 hover:rotate-12 transform transition duration-200 ease-in-out" />
+          <ScrollText className="w-5 h-5 lg:w-8 lg:h-8 text-gray-900 hover:rotate-12 transform transition duration-200 ease-in-out" />
           <span className=" font-extrabold lg:text-xl text-gray-900">
             BlinkNote
           </span>
@@ -27,9 +27,9 @@ export default function Header() {
 
       <div className="flex lg:justify-end lg:flex-1">
         <SignedIn>
-          <div className="flex lg:justify-end lg:flex-1 gap-2">
+          <div className="flex items-center gap-2">
             <NavLink href="/upload">Upload a PDF</NavLink>
-            <div>PRO</div>
+            <PlanBadge />
             <SignedIn>
               <UserButton />
             </SignedIn>
