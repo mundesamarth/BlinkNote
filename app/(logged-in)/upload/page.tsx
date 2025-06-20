@@ -18,9 +18,10 @@ export default async function Page() {
 
   const { hasReachedLimit } = await hasReachedUploadLimit(userId);
 
-  if (hasReachedLimit) {
-    redirect("/dashboard");
-  }
+  // Todo: has reached limit uncommet it
+  // if (hasReachedLimit) {
+  //   redirect("/dashboard");
+  // }
   return (
     <section className="min-h-screen">
       <BgGradient />
