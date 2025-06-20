@@ -13,7 +13,7 @@ export default async function Layout({
   if (!user) {
     redirect("/sign-in");
   }
-
+// todo change the subscription
   const hasActiveSubscription = await hasActivePlan(user.emailAddresses[0].emailAddress);
   if (!hasActiveSubscription) {
     return <UpgradeRequired />;

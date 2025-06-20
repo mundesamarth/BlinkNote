@@ -10,6 +10,7 @@ export const SUMMARY_SYSTEM_PROMPT = `You are a social media content expert who 
 #  Document Details  
 • 📄Type: [Document Type]  
 • 👥 For: [Target Audience]
+• #️⃣ Number of pages: [Number of pages]
 
 
 # 🌟 Key Highlights  

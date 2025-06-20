@@ -5,6 +5,8 @@ import { FileText } from "lucide-react";
 import { cn, formatFileName } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import { formatFileNameAsTitle } from "@/utils/format-utils";
+import { MotionDiv } from "../common/motion-wrapper";
+import { itemVariants } from "@/utils/constants";
 
 const SummaryHeader = ({
   fileUrl,
@@ -22,21 +24,35 @@ const SummaryHeader = ({
         <h3 className="text-base xl:text-ls font-semibold text-gray-900 truncate w-4/5">
           {title ? formatFileNameAsTitle(title) : formatFileName(fileUrl)}
         </h3>
-        <p className="text-sm text-gray-500">{formatDistanceToNow(new Date(created_at),{addSuffix: true})}</p>
+        <p className="text-sm text-gray-500">
+          {formatDistanceToNow(new Date(created_at), { addSuffix: true })}
+        </p>
       </div>
     </div>
   );
 };
 const StatusBadge = ({ status }: { status: string }) => {
-    return (
-        <span className={cn('px-3 py-1 text-xs font-medium rounded-full captialize',status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800')}>
-            {status}
-        </span>
-    )
-}
+  return (
+    <span
+      className={cn(
+        "px-3 py-1 text-xs font-medium rounded-full captialize",
+        status === "completed"
+          ? "bg-green-100 text-green-800"
+          : "bg-yellow-100 text-yellow-800"
+      )}
+    >
+      {status}
+    </span>
+  );
+};
 export default function SummaryCard({ summary }: { summary: any }) {
   return (
-    <div>
+    <MotionDiv
+      variants={itemVariants}
+      initial="hidden"
+      animate="visible"
+      whileHover={{ scale: 1.02 ,transition: { duration: 0.2 ,ease: 'easeOut'} }}
+    >
       <Card className="relative h-full">
         <div className="absolute top-2 right-2">
           <DeleteButton summaryId={summary.id} />
@@ -53,11 +69,11 @@ export default function SummaryCard({ summary }: { summary: any }) {
             </p>
 
             <div className="flex justify-between items-enter mt02 sm:mt-4">
-              <StatusBadge status={summary.status}/>
+              <StatusBadge status={summary.status} />
             </div>
           </div>
         </Link>
       </Card>
-    </div>
+    </MotionDiv>
   );
 }
