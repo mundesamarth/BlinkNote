@@ -50,7 +50,7 @@ function SummaryCardSkeleton() {
 export default function Loading() {
   return (
     <div className="min-h-screen relative">
-      <BgGradient className="from-emerald-200 via-teal-200 to-cyan-200" />
+      <BgGradient className="from-purple-200 via-purple-200 to-orange-200" />
       <section className="container px-10 py-24 mx-auto flex flex-col gap=4">
         <HeaderSkeleton />
         <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3 sm:px-0">
