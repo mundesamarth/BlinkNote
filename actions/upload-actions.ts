@@ -54,7 +54,7 @@ export async function generatePdfText({
   }
 }
 
-export async function generatePdfSummary({
+export async function  generatePdfSummary({
   pdfText,
   fileName,
 }: {

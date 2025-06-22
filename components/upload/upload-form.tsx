@@ -71,8 +71,8 @@ export default function UploadForm() {
         ),
       });
 
-      const resp = await startUpload([file]);
-      if (!resp || resp.length === 0) {
+      const uploadResponse = await startUpload([file]);
+      if (!uploadResponse || uploadResponse.length === 0) {
         toast.error("Something went wrong", {
           description: "Please use a different file",
         });
@@ -80,7 +80,7 @@ export default function UploadForm() {
         return;
       }
 
-      const uploadFileUrl = resp[0].url;
+      const uploadFileUrl = uploadResponse[0].serverData.fileUrl;
       const formattedFileName = formatFileNameAsTitle(file.name);
 
       // Show processing toast
@@ -114,7 +114,7 @@ export default function UploadForm() {
 
         const storeResult = await storePdfSummaryAction({
           summary: data.summary,
-          fileUrl: uploadFileUrl,
+          fileUrl: uploadResponse[0].serverData.fileUrl,
           title: formattedFileName,
           fileName: file.name,
         });

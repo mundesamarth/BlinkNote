@@ -14,11 +14,8 @@ export const ourFileRouter = {
     .onUploadComplete(async ({ metadata, file }) => {
       return {
         userId: metadata.userId,
-        file: {
-          url: file.url,
-          name: file.name,
-          // add more fields if needed (only JSON-safe ones)
-        }
+        fileUrl: file.url,
+        fileName: file.name,
       };
     }),
 } satisfies FileRouter;

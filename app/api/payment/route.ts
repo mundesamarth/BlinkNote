@@ -13,7 +13,8 @@ export const POST = async (req: NextRequest) => {
 
   try {
     event = stripe.webhooks.constructEvent(payload, sig!, endpointSecret);
-    const sessionId = event.data.object.id;
+    const session = event.data.object as Stripe.Checkout.Session;
+    const sessionId = session.id;
     switch (event.type) {
       case "checkout.session.completed":
         console.log("Checkout session completed");
