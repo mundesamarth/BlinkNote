@@ -92,10 +92,8 @@ export default function UploadForm() {
         ),
       });
 
-      // Generate text from PDF
       const result = await generatePdfText({ fileUrl: uploadFileUrl });
 
-      // Generate summary
       const summaryResult = await generatePdfSummary({
         pdfText: result?.data?.pdfText ?? "",
         fileName: formattedFileName,
