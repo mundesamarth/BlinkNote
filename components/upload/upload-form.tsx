@@ -5,6 +5,7 @@ import { z } from "zod";
 import { toast } from "sonner";
 import {
   generatePdfSummary,
+  generatePdfText,
   storePdfSummaryAction,
 } from "@/actions/upload-actions";
 import { useRef, useState } from "react";
@@ -37,8 +38,8 @@ export default function UploadForm() {
         description: e.message,
       });
     },
-    onUploadBegin: ({ file }) => {
-      console.log("Upload has begun for", file);
+    onUploadBegin: ({ data }) => {
+      console.log("Upload has begun for", data);
     },
   });
 
@@ -71,7 +72,7 @@ export default function UploadForm() {
       });
 
       const resp = await startUpload([file]);
-      if (!resp) {
+      if (!resp || resp.length === 0) {
         toast.error("Something went wrong", {
           description: "Please use a different file",
         });
@@ -79,7 +80,10 @@ export default function UploadForm() {
         return;
       }
 
-      // Show summary in progress toast
+      const uploadFileUrl = resp[0].url;
+      const formattedFileName = formatFileNameAsTitle(file.name);
+
+      // Show processing toast
       toast("✨ Hang tight!", {
         description: (
           <span className="text-slate-400 text-sm">
@@ -88,10 +92,18 @@ export default function UploadForm() {
         ),
       });
 
-      const result = await generatePdfSummary(resp);
-      const { data = null, message = null } = result || {};
+      // Generate text from PDF
+      const result = await generatePdfText({ fileUrl: uploadFileUrl });
 
-      if (data && data.summary) {
+      // Generate summary
+      const summaryResult = await generatePdfSummary({
+        pdfText: result?.data?.pdfText ?? "",
+        fileName: formattedFileName,
+      });
+
+      const { data = null, message = null } = summaryResult || {};
+
+      if (data?.summary) {
         toast("📑 Saving PDF...", {
           description: (
             <span className="text-slate-400 text-sm">
@@ -102,8 +114,8 @@ export default function UploadForm() {
 
         const storeResult = await storePdfSummaryAction({
           summary: data.summary,
-          fileUrl: resp[0].serverData.file.url,
-          title: formatFileNameAsTitle(file.name),
+          fileUrl: uploadFileUrl,
+          title: formattedFileName,
           fileName: file.name,
         });
 
@@ -126,12 +138,6 @@ export default function UploadForm() {
         }
         formRef.current?.reset();
       }
-    } catch (err) {
-      console.error("Error occurred", err);
-      toast.error("Something went wrong", {
-        description: "An unexpected error occurred. Please try again.",
-      });
-      formRef.current?.reset();
     } finally {
       setIsLoading(false);
     }
@@ -167,7 +173,7 @@ export default function UploadForm() {
               </div>
             </div>
           </div>
-          <LoadingSkeleton/>
+          <LoadingSkeleton />
         </>
       )}
     </div>

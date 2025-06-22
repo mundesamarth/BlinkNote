@@ -5,7 +5,10 @@ const isProtectedRoute = createRouteMatcher([
   "/summaries(.*)",
   "/upload(.*)",
 ]);
+<<<<<<< HEAD
 
+=======
+>>>>>>> backup
 export default clerkMiddleware(async (auth, req) => {
   if (isProtectedRoute(req)) await auth.protect();
 });
