@@ -9,6 +9,8 @@
 Experience BlinkNote in action:
 
 🔗 [https://blink-note.vercel.app](https://blink-note.vercel.app)
+
+## Project 
 ![Project Image](https://blink-note.vercel.app/opengraph_BlinkNote.png)
 
 Try uploading your PDF, generate emoji-rich summaries, manage your documents with ease, and explore the full capabilities of a modern AI-powered SaaS platform.
