@@ -38,7 +38,7 @@ export default function UploadForm() {
         description: e.message,
       });
     },
-    onUploadBegin: ({ data }) => {
+    onUploadBegin: (data) => {
       console.log("Upload has begun for", data);
     },
   });
