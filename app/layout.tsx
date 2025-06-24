@@ -5,6 +5,7 @@ import Header from "@/components/common/header";
 import Footer from "@/components/common/footer";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "@/components/ui/sonner";
+import { ORIGIN_URL } from "@/utils/helpers";
 
 const fontSans = FontSans({
   variable: "--font-sans",
@@ -16,6 +17,15 @@ export const metadata: Metadata = {
   title: "Blinknote - AI Note Summarizer",
   description:
     "Save time with AI note summarizer. Transforms lengthy notes into concise summaries.",
+    openGraph:{
+      images:[{
+        url: '/opengraph_BlinkNote.png',
+      }]
+    },
+    metadataBase: new URL(ORIGIN_URL),
+    alternates:{
+      canonical: ORIGIN_URL,
+    }
 };
 
 export default function RootLayout({
