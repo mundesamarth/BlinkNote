@@ -23,9 +23,9 @@ This is a **personal side project**, built to demonstrate what a modern full-sta
 
 Even though Stripe is integrated, **you can use test card details to activate Pro features**:
 
-💳 Card Number: 4242 4242 4242 4242
-📆 Expiry Date: Any future date (e.g. 12/34)
-🔒 CVV: Any 3-digit number (e.g. 123)
+- 💳 Card Number: 4242 4242 4242 4242
+- 📆 Expiry Date: Any future date (e.g. 12/34)
+- 🔒 CVV: Any 3-digit number (e.g. 123)
 
 All payments are in test mode — **no real money is involved**.
 
