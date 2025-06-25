@@ -96,13 +96,13 @@ All payments are in test mode — **no real money is involved**.
 
 ## 📁 Project Structure
 
-/app # Next.js App Router directory
-/components # Reusable UI components (shadcn)
-/lib # Utility functions and helpers
-/actions # Server actions for DB & API
-/db # NeonDB schema and queries
-/styles # TailwindCSS and global styles
-/public # Static assets
+- /app # Next.js App Router directory
+- /components # Reusable UI components (shadcn)
+- /lib # Utility functions and helpers
+- /actions # Server actions for DB & API
+- /db # NeonDB schema and queries
+- /styles # TailwindCSS and global styles
+- /public # Static assets
 
 ---
 
