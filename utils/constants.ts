@@ -30,7 +30,7 @@ export const pricingPlans = [
     id: "pro",
     paymentLink: isDev
       ? "https://buy.stripe.com/test_4gM00l0Kx1tZ75w7nm9Ve01"
-      : "test_4gM00l0Kx1tZ75w7nm9Ve01",
+      : "https://buy.stripe.com/test_4gM00l0Kx1tZ75w7nm9Ve01",
     priceId: isDev ? "price_1RaZuCRwZU0VrcK9aY1i2Xll" : "price_1RaZuCRwZU0VrcK9aY1i2Xll",
   },
 ];
